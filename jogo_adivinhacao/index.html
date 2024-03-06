@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Jogo de Adivinhação</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #343a40;
+        }
+
+        p {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+
+        .guessField {
+            width: 200px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            margin-bottom: 10px;
+            transition: border-color 0.3s ease;
+        }
+
+        .guessField:focus {
+            border-color: #007bff;
+        }
+
+        .guessSubmit {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .guessSubmit:hover {
+            background-color: #0056b3;
+        }
+
+        .resultParas {
+            margin-top: 20px;
+        }
+
+        .resultParas p {
+            margin: 10px 0;
+            color: #343a40;
+        }
+
+        .lastResult {
+            font-weight: bold;
+        }
+
+        .lowOrHi {
+            font-style: italic;
+        }
+
+        .restartButton {
+            padding: 10px 20px;
+            border: none;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .restartButton:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Jogo de Adivinhação</h1>
+    <p>Escolhemos um número entre 1 e 100. Você tem 10 chances para acertar o número. Boa sorte!</p>
+    <div class="form">
+        <label for="guessField">Digite seu palpite:</label>
+        <input type="number" min="1" max="100" required id="guessField" class="guessField">
+        <input type="submit" value="Enviar Palpite" class="guessSubmit">
+    </div>
+    <div class="resultParas">
+        <p class="guesses"></p>
+        <p class="lastResult"></p>
+        <p class="lowOrHi"></p>
+    </div>
+</div>
+<script>
+    var numeroAleatorio = Math.floor(Math.random() * 100) + 1;
+    var palpites = document.querySelector(".guesses");
+    var ultimoResultado = document.querySelector(".lastResult");
+    var baixoOuAlto = document.querySelector(".lowOrHi");
+    var envioPalpite = document.querySelector(".guessSubmit");
+    var campoPalpite = document.querySelector(".guessField");
+    var contagemPalpites = 1;
+    var botaoReinicio;
+
+    function conferirPalpite() {
+        var palpiteUsuario = Number(campoPalpite.value);
+
+        if (contagemPalpites === 1) {
+            palpites.textContent = "Palpites Anteriores: ";
+        }
+
+        palpites.textContent += palpiteUsuario + " ";
+
+        if (palpiteUsuario === numeroAleatorio) {
+            ultimoResultado.textContent = "PARABÉNS, VOCÊ ACERTOU!!!";
+            ultimoResultado.style.backgroundColor = "green";
+            baixoOuAlto.textContent = "";
+            configFimDeJogo();
+        } else if (contagemPalpites === 10) {
+            ultimoResultado.textContent = "Você perdeu! O número era " + numeroAleatorio;
+            baixoOuAlto.textContent = "";
+            configFimDeJogo();
+        } else {
+            ultimoResultado.textContent = "Errado";
+            ultimoResultado.style.backgroundColor = "red";
+            if (palpiteUsuario < numeroAleatorio) {
+                baixoOuAlto.textContent = "Tente um número maior.";
+            } else if (palpiteUsuario > numeroAleatorio) {
+                baixoOuAlto.textContent = "Tente um número menor.";
+            }
+        }
+
+        contagemPalpites++;
+        campoPalpite.value = "";
+        campoPalpite.focus();
+    }
+
+    envioPalpite.addEventListener("click", conferirPalpite);
+
+    function configFimDeJogo() {
+        campoPalpite.disabled = true;
+        envioPalpite.disabled = true;
+        botaoReinicio = document.createElement("button");
+        botaoReinicio.textContent = "Iniciar Novo Jogo";
+        document.body.appendChild(botaoReinicio);
+        botaoReinicio.addEventListener("click", reiniciarJogo);
+    }
+
+    function reiniciarJogo() {
+        contagemPalpites = 1;
+        var reiniciarParas = document.querySelectorAll(".resultParas p");
+        for (var i = 0; i < reiniciarParas.length; i++) {
+            reiniciarParas[i].textContent = "";
+        }
+
+        botaoReinicio.parentNode.removeChild(botaoReinicio);
+        campoPalpite.disabled = false;
+        envioPalpite.disabled = false;
+        campoPalpite.value = "";
+        campoPalpite.focus();
+
+        ultimoResultado.style.backgroundColor = "white";
+
+        numeroAleatorio = Math.floor(Math.random() * 100) + 1;
+    }// Seu código JavaScript aqui...
+</script>
+</body>
+</html>
